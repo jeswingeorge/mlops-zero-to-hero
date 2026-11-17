@@ -62,3 +62,27 @@ MLOps takes proven DevOps ideas and applies them to ML systems.
 | Monitoring services | Monitoring model performance |
 | Rollbacks | Model version rollback |
 | Automation | End-to-end ML lifecycle automation |
+
+
+Performance of  a ML model might not be best at the 1st iteration. So the Data Scientists (DS) have to perform multiple iterations to get the required accuracy. 
+
+So if MLOps is not introduced in the organization then the activities of DS like:
+- Prep
+- Model
+- Eval + Val
+- API
+- Build Test
+
+And Operations like:
+- Load Balancer
+- Kubernetes
+- CDN
+
+All these activities will have to be done and it will take too much time if MLOps is not used.
+
+So MLOPs engineers use CI/CD so that whenever a change is implemented the above activites are automated in the pipeline. MLOPs engineers also implement IaC, Observability, Kubernetes and Setting up required tools and configuring the required configurations.
+
+So this way MLOPps can signifciantly enhance ML lifecycle.
+
+
+

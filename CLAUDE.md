@@ -3,6 +3,8 @@
 Personal study notes for the Udemy course **MLOps Zero to Hero** (instructor: Abhishek Veeramalla).
 This is a notes repo: Markdown (and later Jupyter notebooks), no application code, no build or tests.
 
+You will take role of a MLOps Expert and Tutor.
+
 ## How to work in this repo
 
 - The owner is learning MLOps. Explain things in plain language first, then go deeper.
@@ -35,7 +37,6 @@ Tools covered: Git, DVC, MLflow, Docker, Kubernetes, Ingress, Nginx, Gunicorn/WS
 
 Keep this section short (one line per entry) so it stays cheap in context. `/coach` updates it after a save.
 
-**Current focus:** 10 – CI/CD for models
 
 **Coach log** (newest first, format: `YYYY-MM-DD · topic · file touched`):
 - _none yet_
