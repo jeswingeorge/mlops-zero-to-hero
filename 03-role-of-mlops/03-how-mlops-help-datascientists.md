@@ -208,4 +208,140 @@ jobs:
 
     This particular action checks out your repo's code onto the CI runner, so later steps like installing dependencies or running tests can use it.
 
-- 2ns Step: 
+- **2nd Step:** Define the next steps: Python set-up. Github action names can be obtained from documentation.
+  ```
+  name: CI - Train and Save the model
+
+  on:
+    push:
+      branches: [ main ]
+    pull_request:
+      branches: [ main ]
+
+  jobs:
+    matrix-pip:
+      name: Train and Save the model
+      runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          python: [3.11, 3.12]
+
+      steps: Checkout
+      uses: actions/checkout@v4
+      with: 
+          python-version: ${{matrix.python}}
+  ```
+
+`${{matrix.python}}` refers to the versions which had been provided earlier. 
+
+Once you have python next step is to install dependencies. 
+
+> But why not installing virtual environment here?  
+
+So this `runs-on: ubuntu-latest` is GitHub provider runner. We are not going to use it as personal machine. This runner will be terminated as soon as the GitHub workflow is done, or it will be released from our project as soon as the workflow is completed. So we don't have to install virtual environment.
+
+So once the setup of Python is done, we will basically upgrade pip.
+
+```
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup python 
+        uses: actions/setup-python@v4
+        with:
+           python-version: ${{ matrix.python }}
+      
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip setuptools wheel
+
+```
+
+**Next step:** install project dependencies.
+
+```
+  name: Install project dependencies
+  run: python -m pip install -r requirements.txt
+```
+
+Next step is to train the model, after training we will also list the artifacts. Pipe operator (`|`) is to list multiple commands. This step `ls -la artifacts` ensures that once the model is train.py is executed the model is saved to the artifacts folder.
+
+
+```
+name: Train the model
+  run: |
+      python train.py
+      ls -la artifacts
+```
+
+So anyone who executes this, uh, GitHub workflow through their commit or through their pull request, they can just go to a location provided by GitHub and they can download the artifact that is `model.pkl`.
+
+
+We will just use a GitHub action for uploading the artifact, so I'll call the name as upload artifacts. We will use action so `uses` and not `run`.
+So it will be: `actions/upload-artifact@v4`.
+
+
+This makes sure that the artifacts files are unique (names) and are not oner-written.
+
+```
+with:
+          name: ml-artifacts-${{ matrix.python }}-${{ github.run_id }}
+          path: artifacts
+```
+
+
+### Final
+
+```
+name: CI - Train and Save the model
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  matrix-pip:
+    name: Train and Save the model
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: [3.11, 3.12]
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup python 
+        uses: actions/setup-python@v4
+        with:
+           python-version: ${{ matrix.python }}
+      
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip setuptools wheel
+
+      - name: Install project dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Train the model
+        run: |
+           python train.py
+           ls -la artifacts
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ml-artifacts-${{ matrix.python }}-${{ github.run_id }}
+          path: artifacts
+
+```
+
+
+The pipeline will trigger On pushing the code to github.
+![](images/4.png)
+
+We can see the artifact download link also, it will have the `model.pkl` file and `matrix.json` where they can see the accuracy of the model.
+![](images/3.png)
+
+So here as part of CI/CD we have automated the training process.
